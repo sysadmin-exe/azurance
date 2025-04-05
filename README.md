@@ -58,5 +58,5 @@ No modules.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_platform_endpoint"></a> [platform\_endpoint](#output\_platform\_endpoint) | PPublic IP To Access Platform |
+| <a name="output_platform_endpoint"></a> [platform\_endpoint](#output\_platform\_endpoint) | Public IP To Access Platform |
 | <a name="output_platform_name"></a> [platform\_name](#output\_platform\_name) | Name of the platform |
