@@ -5,13 +5,13 @@ provider "azurerm" {
 
 # Create a resource group
 resource "azurerm_resource_group" "azurance" {
-  name     = "${local.resource_name_prefix}-rg"
+  name     = "${local.resource_name_prefix}rg"
   location = var.location
 }
 
 # Create a virtual network
 resource "azurerm_virtual_network" "azurance" {
-  name                = "${local.resource_name_prefix}-vnet"
+  name                = "${local.resource_name_prefix}vnet"
   address_space       = ["10.0.0.0/16"]
   location            = azurerm_resource_group.azurance.location
   resource_group_name = azurerm_resource_group.azurance.name
@@ -19,21 +19,21 @@ resource "azurerm_virtual_network" "azurance" {
 
 # Create three subnets in different AZs
 resource "azurerm_subnet" "subnet1" {
-  name                 = "subnet1"
+  name                 = "${local.resource_name_prefix}subnet1"
   resource_group_name  = azurerm_resource_group.azurance.name
   virtual_network_name = azurerm_virtual_network.azurance.name
   address_prefixes     = ["10.0.1.0/24"]
 }
 
 resource "azurerm_subnet" "subnet2" {
-  name                 = "subnet2"
+  name                 = "${local.resource_name_prefix}subnet2"
   resource_group_name  = azurerm_resource_group.azurance.name
   virtual_network_name = azurerm_virtual_network.azurance.name
   address_prefixes     = ["10.0.2.0/24"]
 }
 
 resource "azurerm_subnet" "subnet3" {
-  name                 = "subnet3"
+  name                 = "${local.resource_name_prefix}subnet3"
   resource_group_name  = azurerm_resource_group.azurance.name
   virtual_network_name = azurerm_virtual_network.azurance.name
   address_prefixes     = ["10.0.3.0/24"]
@@ -41,7 +41,7 @@ resource "azurerm_subnet" "subnet3" {
 
 # Create a network interface for the VM
 resource "azurerm_network_interface" "azurance" {
-  name                = "azurance-nic"
+  name                = "${local.resource_name_prefix}nic"
   location            = azurerm_resource_group.azurance.location
   resource_group_name = azurerm_resource_group.azurance.name
 
@@ -54,7 +54,7 @@ resource "azurerm_network_interface" "azurance" {
 
 # Create a network security group
 resource "azurerm_network_security_group" "azurance" {
-  name                = "azurance-nsg"
+  name                = "${local.resource_name_prefix}nsg"
   location            = azurerm_resource_group.azurance.location
   resource_group_name = azurerm_resource_group.azurance.name
 
@@ -91,15 +91,17 @@ resource "azurerm_subnet_network_security_group_association" "azurance" {
 
 # Create a virtual machine
 resource "azurerm_linux_virtual_machine" "azurance" {
-  name                  = "azurance-vm"
+  name                  = "${local.resource_name_prefix}vm"
   location              = azurerm_resource_group.azurance.location
   resource_group_name   = azurerm_resource_group.azurance.name
   network_interface_ids = [azurerm_network_interface.azurance.id]
-  size                  = local.platform_type.${var.platform_tpe}.size
-  zone                  = "3" 
+  size                  = lookup(local.platform_type, "${var.platform_type}".size, "Standard_DS1_v2")
+  admin_username        = "instanceadmin"
+  computer_name         = "${local.resource_name_prefix}vm"
+  zone                  = "3"
 
   os_disk {
-    name                 = "azurance-osdisk"
+    name                 = "${local.resource_name_prefix}osdisk"
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
@@ -111,16 +113,15 @@ resource "azurerm_linux_virtual_machine" "azurance" {
     version   = "latest"
   }
 
-  admin_username = "adminuser"
   admin_ssh_key {
     username   = "adminuser"
-    public_key = file("~/.ssh/id_rsa.pub")  # Make sure this file exists
+    public_key = file("~/.ssh/id_rsa.pub") # Make sure this file exists
   }
 }
 
 # Create a public IP for the load balancer
 resource "azurerm_public_ip" "lb" {
-  name                = "azurance-lb-pip"
+  name                = "${local.resource_name_prefix}lb-pip"
   location            = azurerm_resource_group.azurance.location
   resource_group_name = azurerm_resource_group.azurance.name
   allocation_method   = "Static"
@@ -129,7 +130,7 @@ resource "azurerm_public_ip" "lb" {
 
 # Create the load balancer
 resource "azurerm_lb" "azurance" {
-  name                = "azurance-lb"
+  name                = "${local.resource_name_prefix}lb"
   location            = azurerm_resource_group.azurance.location
   resource_group_name = azurerm_resource_group.azurance.name
   sku                 = "Standard"
@@ -183,7 +184,7 @@ resource "azurerm_storage_account" "azurance" {
 
 # Create a blob container
 resource "azurerm_storage_container" "azurance" {
-  name                  = "azurance-container"
-  storage_account_name  = azurerm_storage_account.azurance.name
+  name                  = "${local.resource_name_prefix}container"
+  storage_account_id    = azurerm_storage_account.azurance.id
   container_access_type = "private"
 }

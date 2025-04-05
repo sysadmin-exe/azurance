@@ -1,20 +1,37 @@
 locals {
-    resource_name_prefix = "${var.customer_name}-${environment}-"
+  resource_name_prefix = "${var.customer_name}-${environment}-"
+  platform_type = {
+    "S" = {
+      size = "Standard_DS1_v2"
+    }
+    "M" = {
+      size = "Standard_DS2_v2"
+    }
+    "L" = {
+      size = "Standard_DS3_v2"
+    }
+    "XL" = {
+      size = "Standard_DS4_v2"
+    }
+    "XXL" = {
+      size = "Standard_DS5_v2"
+    }
+  }
 }
 
 variable "customer_name" {
-    description = "The name of the customer using the product"
-    type = string
+  description = "The name of the customer using the product"
+  type        = string
 }
 
 variable "environment" {
-    description = "Deployment Environment Name"
-    type = string
+  description = "Deployment Environment Name"
+  type        = string
 }
 
 variable "product_version" {
-    description = Version of product to be deployed"
-    type = string
+  description = "Version of product to be deployed"
+  type        = string
 }
 
 variable "platform_type" {
@@ -28,8 +45,7 @@ variable "platform_type" {
 }
 
 variable "location" {
-    description = "Location for hosting platform"
-    type = string
+  description = "Location for hosting platform"
+  type        = string
 }
 
-var
