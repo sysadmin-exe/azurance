@@ -5,5 +5,5 @@ output "platform_endpoint" {
 
 output "platform_name" {
   description = "Name of the platform"
-  value       = "${local.resource_name_prefix}-${var.platform_type}"
+  value       = "${local.resource_name_prefix}-${var.platform_type}-${var.product_version}"
 }
