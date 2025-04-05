@@ -1,5 +1,5 @@
 output "platform_endpoint" {
-  description = "PPublic IP To Access Platform"
+  description = "Public IP To Access Platform"
   value       = azurerm_lb.azurance.frontend_ip_configuration[0].public_ip_address
 }
 
